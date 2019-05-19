@@ -1,5 +1,5 @@
-#ifndef DOORBELL_NETWORK_HPP
-#define DOORBELL_NETWORK_HPP
+#ifndef NETWORK_HPP
+#define NETWORK_HPP
 
 #include <Arduino.h>
 #include <WiFi.h>
@@ -16,10 +16,10 @@ namespace Network {
     TimerHandle_t wifiReconnectTimer;
 
     void setupOTA() {
-#ifndef DEBUG_DOOR_BELL
-        ArduinoOTA.setHostname("DoorBell");
+#ifndef DEBUG
+        ArduinoOTA.setHostname(("Plants_" + (String)WiFi.macAddress()).c_str());
 #else
-        ArduinoOTA.setHostname("DEBUG_DOOR_BELL");
+        ArduinoOTA.setHostname(("DEBUG_Plants_" + (String)WiFi.macAddress()).c_str());
 #endif
 
         ArduinoOTA.setPassword(OTA_PASSWORD);
@@ -72,7 +72,7 @@ namespace Network {
         Serial.println("Connected to MQTT.");
         Serial.print("Session present: ");
         Serial.println(sessionPresent);
-        mqttClient.subscribe("/DoorBell/Control", 0);
+        mqttClient.subscribe("/Plants/Config", 0);
     }
 
     void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -113,9 +113,9 @@ namespace Network {
         WiFi.onEvent(WiFiEvent);
 
 #ifndef DEBUG_DOOR_BELL
-        mqttClient.setClientId("DoorBellMQTTClient");
+        mqttClient.setClientId(("PlantMQTTClient_" + (String)WiFi.macAddress()).c_str());
 #else
-        mqttClient.setClientId("DEBUG_DOOR_BELL");
+        mqttClient.setClientId(("DEBUG_PlantMQTTClient_" + (String)WiFi.macAddress()).c_str());
 #endif
         mqttClient.onConnect(onMqttConnect);
         mqttClient.onDisconnect(onMqttDisconnect);
